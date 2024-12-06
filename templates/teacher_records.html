@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Student Records</title>
+</head>
+<body>
+    <h2>All Student Records</h2>
+    <ul>
+        {% for record in records %}
+            <li>{{ record.student }}: {{ record.subject }}: {{ record.marks }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
