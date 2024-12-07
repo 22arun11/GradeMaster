@@ -1,25 +1,29 @@
-from rest_framework import generics, permissions
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import get_template
+from django.utils import timezone
+from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
-from .serializers import UserSerializer, RegisterSerializer
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
+
+from rest_framework import generics, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from .models import Marks, Student, Subject, Semester
-from .serializers import MarksSerializer
-from django.contrib.auth.decorators import login_required
-from .forms import MarksFormSet, StudentSelectForm
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
-from django.template.loader import get_template
+
 from xhtml2pdf import pisa
-from django.utils import timezone
 from io import BytesIO
 import google.generativeai as genai
 import os
 import requests
 import re
+
+from .models import Marks, Student, Subject, Semester, Course
+from .forms import MarksFormSet, StudentSelectForm, MarksForm, SectionSelectForm, SubjectSelectForm
+from .serializers import UserSerializer, RegisterSerializer, MarksSerializer
+
+
+
 
 @login_required
 def teacher_dashboard(request):
@@ -236,118 +240,13 @@ def teacher_records_view(request):
     records = Marks.objects.all()
     return render(request, 'teacher_records.html', {'records': records})
 
-# from django.shortcuts import render, redirect
-# from django.forms.models import modelformset_factory
-# from .forms import MarksForm, SectionSelectForm, SubjectSelectForm
-# from .models import Student, Marks, Subject, Semester, Course
 
-# def enter_marks(request):
-#     if request.method == 'POST':
-#         section_form = SectionSelectForm(request.POST)
-#         subject_form = SubjectSelectForm(request.POST)
-#         if section_form.is_valid() and subject_form.is_valid():
-#             course = section_form.cleaned_data['course']
-#             semester = section_form.cleaned_data['semester']
-#             subject = subject_form.cleaned_data['subject']
-#             students = Student.objects.filter(course=course)
-            
-#             # Create a formset with all students for the selected subject
-#             initial_data = []
-#             for student in students:
-#                 marks = Marks.objects.filter(student=student, subject=subject).first()
-#                 if marks:
-#                     initial_data.append({'student': student, 'marks': marks.marks, 'grade': marks.grade})
-#                 else:
-#                     initial_data.append({'student': student})
-
-#             MarksFormSet = modelformset_factory(Marks, form=MarksForm, extra=len(students))
-#             formset = MarksFormSet(queryset=Marks.objects.none(), initial=initial_data)
-
-#             if 'save' in request.POST:
-#                 formset = MarksFormSet(request.POST)
-#                 if formset.is_valid():
-#                     for form in formset:
-#                         marks = form.save(commit=True)
-#                         marks.subject = subject
-#                         marks.student = Student.objects.get(id=form.cleaned_data['student'])
-#                         marks.save()
-#                     return redirect('enter-marks')
-#         else:
-#             formset = None
-#     else:
-#         section_form = SectionSelectForm()
-#         subject_form = SubjectSelectForm()
-#         formset = None
-
-#     return render(request, 'enter_marks.html', {'section_form': section_form, 'subject_form': subject_form, 'formset': formset})
-
-# def calculate_grade_point(grade):
-#     if grade == 'O':
-#         return 10
-#     elif grade == 'A+':
-#         return 9.5
-#     elif grade == 'A':
-#         return 9
-#     elif grade == 'B+':
-#         return 8
-#     elif grade == 'B':
-#         return 7
-#     elif grade == 'C':
-#         return 6
-#     elif grade == 'P':
-#         return 5
-#     else:
-#         return 0
-
-# def view_marksheet(request):
-#     if request.method == 'POST':
-#         student_form = StudentSelectForm(request.POST)
-#         if student_form.is_valid():
-#             student = student_form.cleaned_data['student']
-#             semester = student_form.cleaned_data['semester']
-#             marks = Marks.objects.filter(student=student, subject__semester=semester)
-
-#             total_grade_points = 0
-#             total_subjects = 0
-#             for mark in marks:
-#                 total_grade_points += calculate_grade_point(mark.grade)
-#                 total_subjects += 1
-
-#             sgpa = total_grade_points / total_subjects if total_subjects > 0 else 0
-
-#             # Calculate CGPA
-#             all_marks = Marks.objects.filter(student=student, subject__semester__number__lte=semester.number)
-#             total_cumulative_grade_points = 0
-#             total_cumulative_subjects = 0
-#             for mark in all_marks:
-#                 total_cumulative_grade_points += calculate_grade_point(mark.grade)
-#                 total_cumulative_subjects += 1
-
-#             cgpa = total_cumulative_grade_points / total_cumulative_subjects if total_cumulative_subjects > 0 else 0
-
-#             return render(request, 'view_marksheet.html', {'marks': marks, 'student': student, 'semester': semester, 'sgpa': sgpa, 'cgpa': cgpa})
-#     else:
-#         student_form = StudentSelectForm()
-
-#     return render(request, 'select_student.html', {'student_form': student_form})
-
-
-from django.shortcuts import render, redirect
-from django.forms.models import modelformset_factory
-from .forms import MarksForm, SectionSelectForm, SubjectSelectForm, StudentSelectForm
-from .models import Student, Marks, Subject, Semester, Course
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 
 def get_semesters(request):
     course_id = request.GET.get('course_id')
     semesters = Semester.objects.filter(course_id=course_id).values('id', 'number')
     return JsonResponse({'semesters': list(semesters)})
 
-
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from .models import Student, Semester, Marks
 
 def calculate_grade_point(grade):
     if grade == 'O':
