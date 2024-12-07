@@ -172,12 +172,12 @@ Note : Only a single student data has been completely entered in the database co
 ![WhatsApp Image 2024-12-07 at 18 36 30_3db1c655](https://github.com/user-attachments/assets/6e01b320-b7ba-4abd-9100-19c8c458c08d)
 
 
-### Django Subjects Page 
+### Django Subjects Page
 
 ![WhatsApp Image 2024-12-07 at 18 36 25_7cb033df](https://github.com/user-attachments/assets/2f23f6c9-c71d-4b29-bd55-1afc85fbd171)
 
 
-### Django Upon adding a new subject 
+### Django Upon adding a new subject based on the course where we can assign multiple subjects to a single semester
 
 ![WhatsApp Image 2024-12-07 at 18 33 49_a1abc164](https://github.com/user-attachments/assets/ae056a00-9bd9-4541-aa7f-dbcad483d8d1)
 
