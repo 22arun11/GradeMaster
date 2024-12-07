@@ -1,6 +1,4 @@
-# Project Title
-
-GradeMaster
+# GradeMaster
 
 ## Description
 
