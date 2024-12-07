@@ -102,7 +102,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ![WhatsApp Image 2024-12-07 at 20 59 12_6acd5479](https://github.com/user-attachments/assets/1079ae01-f1fb-4723-b6aa-6db9c6f0d311)
 
 
-### Student login Page 
+### Student upon successful login  
 ### Upon logging in each student could log in to their own account and only their details will be visible
 
 ![WhatsApp Image 2024-12-07 at 18 31 27_dacb3b11](https://github.com/user-attachments/assets/26df51a7-d966-421b-b3b0-26fb06865420)
