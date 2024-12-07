@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Semester</title>
+</head>
+<body>
+    <h2>Select Semester</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ student_form.as_p }}
+        <button type="submit">View Marksheet</button>
+    </form>
+</body>
+</html>

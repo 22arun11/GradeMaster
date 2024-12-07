@@ -8,6 +8,11 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        for i in range(1, self.semesters + 1):
+            Semester.objects.get_or_create(course=self, number=i)
+
 class Semester(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     number = models.IntegerField()
@@ -19,13 +24,14 @@ class Subject(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    credits = models.IntegerField(default=3)
 
     def __str__(self):
         return self.name
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default='Default Name')
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):

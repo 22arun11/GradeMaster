@@ -4,11 +4,12 @@
     <title>Enter Marks</title>
 </head>
 <body>
-    <h2>Enter Marks for Student</h2>
+    <h2>Enter Marks for Students</h2>
     <form method="post">
         {% csrf_token %}
-        {{ student_form.as_p }}
-        <button type="submit">Select Student and Semester</button>
+        {{ section_form.as_p }}
+        {{ subject_form.as_p }}
+        <button type="submit">Select Section and Subject</button>
     </form>
 
     {% if formset %}
@@ -18,8 +19,7 @@
             <table>
                 {% for form in formset %}
                     <tr>
-                        <td>{{ form.subject.label_tag }}</td>
-                        <td>{{ form.subject }}</td>
+                        <td>{{ form.initial.student.name }}</td>
                         <td>{{ form.marks.label_tag }}</td>
                         <td>{{ form.marks }}</td>
                         <td>{{ form.grade.label_tag }}</td>

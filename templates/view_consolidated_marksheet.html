@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Consolidated Marksheet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .summary {
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>University Name</h2>
+        <h3>Consolidated Marksheet for {{ student.name }}</h3>
+        <p>Date: {{ date }}</p>
+        <table>
+            <tr>
+                <th>Subject</th>
+                <th>Marks</th>
+                <th>Grade</th>
+                <th>Credits</th>
+                <th>Grade Point</th>
+            </tr>
+            {% for mark in marks %}
+                <tr>
+                    <td>{{ mark.subject.name }}</td>
+                    <td>{{ mark.marks }}</td>
+                    <td>{{ mark.grade }}</td>
+                    <td>{{ mark.subject.credits }}</td>
+                    <td>
+                        {% if mark.grade == 'O' %}
+                            10
+                        {% elif mark.grade == 'A+' %}
+                            9.5
+                        {% elif mark.grade == 'A' %}
+                            9
+                        {% elif mark.grade == 'B+' %}
+                            8
+                        {% elif mark.grade == 'B' %}
+                            7
+                        {% elif mark.grade == 'C' %}
+                            6
+                        {% elif mark.grade == 'P' %}
+                            5
+                        {% else %}
+                            0
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <div class="summary">
+            <h3>Summary</h3>
+            <p><strong>CGPA:</strong> {{ cgpa }}</p>
+        </div>
+
+        <div class="footer">
+            <p>University Signature</p>
+            <p>__________________________</p>
+        </div>
+    </div>
+</body>
+</html>
