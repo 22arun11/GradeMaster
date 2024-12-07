@@ -48,7 +48,13 @@ GradeMaster is a web application for managing student grades and generating mark
     ```sh
     python manage.py runserver
     ```
+    
+7. **Set up the dotenv folder in the main directory**:
 
+    ```sh
+    GEMINI_API_KEY = "Your key"
+    ```
+    
 ## Usage
 
 1. **Access the application**:
