@@ -114,6 +114,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ![WhatsApp Image 2024-12-07 at 18 32 30_cb3756af](https://github.com/user-attachments/assets/9e734c27-b498-4d5f-b896-d46dd9596c1b)
 
 
+### Now when here when the student enters the 4th sem he could see the details and cgpa till his 4th considering the prvious records
+![image](https://github.com/user-attachments/assets/8f99229e-2b18-4737-be52-5d7f376314b5)
+
+
 ### When a student wishes to see the consolidated Marksheet then on selecting Consolidated Marksheet
 
 ![WhatsApp Image 2024-12-07 at 18 32 56_25d87853](https://github.com/user-attachments/assets/86a2a519-54a6-4074-8e29-89bfc67af4a5)
