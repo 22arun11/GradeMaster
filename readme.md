@@ -119,12 +119,15 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 
 ### Now when the student wishes to get some recommendation based on his Strengths and Weakness he could select the strengths and weakness
-## (This is Done with respect to the gemini API please visit : https://aistudio.google.com/  for further information)
+### (This is Done with respect to the gemini API please visit : https://aistudio.google.com/  for further information)
 ![WhatsApp Image 2024-12-07 at 18 31 06_2eb4ca87](https://github.com/user-attachments/assets/a616a5f7-c80b-43f2-a8cf-0d23c7449b73)
+
 
 ### Now When the teacher logs in They could see the details of any registered student
 ![WhatsApp Image 2024-12-07 at 20 53 52_79e96719](https://github.com/user-attachments/assets/aa96cf10-08c0-44fa-bb44-fa7997df9747)
 ![WhatsApp Image 2024-12-07 at 20 54 09_30692eab](https://github.com/user-attachments/assets/7bdf209e-5b4c-41f5-a8ab-784a4ffbf7d8)
+
+
 ![image](https://github.com/user-attachments/assets/5fca7d53-306b-4123-b65f-8ede4cb9eaa1)
 ![image](https://github.com/user-attachments/assets/1dbcefc7-d8c1-432e-8215-dfaf4d0b2b18)
 
