@@ -130,7 +130,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 
 ### Now when the student wishes to get some recommendation based on his Strengths and Weakness he could select the strengths and weakness
-### (This is Done with respect to the gemini API please visit : https://aistudio.google.com/  for further information)
+### The recommendations are based on the student's high performing subjects and recommendations from AI
+### (The recommendations are performed with respect to the gemini API please visit : https://aistudio.google.com/  for further information)
 
 ![WhatsApp Image 2024-12-07 at 18 31 06_2eb4ca87](https://github.com/user-attachments/assets/a616a5f7-c80b-43f2-a8cf-0d23c7449b73)
 
