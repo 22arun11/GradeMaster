@@ -16,8 +16,94 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.utils import timezone
 from io import BytesIO
+import google.generativeai as genai
+import os
+import requests
+import re
 
+@login_required
+def teacher_dashboard(request):
+    # if not hasattr(request.user, 'teacher'):
+    #     return redirect('login')
+    students = Student.objects.all()
+    return render(request, 'teacher_dashboard.html', {'students': students})
 
+def view_student_marksheet(request, student_id):
+    
+    student = get_object_or_404(Student, id=student_id)
+    marks = Marks.objects.filter(student=student)
+    total_grade_points = 0
+    total_credits = 0
+    for mark in marks:
+        grade_point = calculate_grade_point(mark.grade)
+        total_grade_points += grade_point * mark.subject.credits
+        total_credits += mark.subject.credits
+
+    sgpa = total_grade_points / total_credits if total_credits > 0 else 0
+
+    all_marks = Marks.objects.filter(student=student)
+    total_cumulative_grade_points = 0
+    total_cumulative_credits = 0
+    for mark in all_marks:
+        grade_point = calculate_grade_point(mark.grade)
+        total_cumulative_grade_points += grade_point * mark.subject.credits
+        total_cumulative_credits += mark.subject.credits
+
+    cgpa = total_cumulative_grade_points / total_cumulative_credits if total_cumulative_credits > 0 else 0
+
+    context = {
+        'student': student,
+        'marks': marks,
+        'sgpa': sgpa,
+        'cgpa': cgpa,
+        'total_credits': total_cumulative_credits,
+        'semester': marks.first().subject.semester.number if marks.exists() else None,
+    }
+    return render(request, 'view_marksheet.html', context)
+    
+
+def view_strengths_weaknesses(request):
+    student = get_object_or_404(Student, user=request.user)
+    marks = Marks.objects.filter(student=student)
+
+    # Calculate strengths and weaknesses
+    subject_scores = {}
+    for mark in marks:
+        if mark.subject.name not in subject_scores:
+            subject_scores[mark.subject.name] = []
+        subject_scores[mark.subject.name].append(mark.marks)
+
+    strengths = sorted(subject_scores.items(), key=lambda x: sum(x[1]) / len(x[1]), reverse=True)[:3]
+    weaknesses = sorted(subject_scores.items(), key=lambda x: sum(x[1]) / len(x[1]))[:3]
+
+    # Configure the Google Generative AI API
+    gemini_api_key = os.getenv('GEMINI_API_KEY')
+    genai.configure(api_key=gemini_api_key)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+
+    # Generate recommendations using the Google Generative AI API
+    recommendations = []
+    for subject, _ in strengths:
+        prompt = f"Provide career and higher study recommendations for a student excelling in {subject}."
+        try:
+            response = model.generate_content(prompt)
+            formatted_response = response.text.replace('\n', '<br>')
+            # Replace **text** with <strong>text</strong>
+            formatted_response = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', formatted_response)
+            # Replace *text* with <em>text</em>
+            formatted_response = re.sub(r'\*(.*?)\*', r'<em>\1</em>', formatted_response)
+            recommendations.append(formatted_response)
+        except Exception as e:
+            print(f"Exception occurred while fetching recommendations for {subject}: {e}")  # Debugging step
+            recommendations.append(f"Consider exploring career opportunities in {subject} related fields.")
+
+    context = {
+        'student': student,
+        'strengths': strengths,
+        'weaknesses': weaknesses,
+        'recommendations': recommendations,
+    }
+    return render(request, 'view_strengths_weaknesses.html', context)
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
@@ -96,10 +182,16 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
+        role = request.POST['role']
+        if role == "teacher":
+            role = True 
+        else: role = False
+        user = authenticate(request, username=username, password=password, is_staff=role)
+        if user is not None and not role:
             login(request, user)
             return redirect('view-marksheet')
+        elif role:
+            return redirect('teacher_dashboard')
         else:
             return render(request, 'login.html', {'error': 'Invalid credentials'})
     return render(request, 'login.html')
@@ -108,8 +200,15 @@ def register_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         email = request.POST['email']
-        password = request.POST['password']
-        user = User.objects.create_user(username, email, password)
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+        role = request.POST['role']
+        if password1 == password2:
+            password = password1
+        if role == "teacher":
+            role = True 
+        else: role = False
+        user = User.objects.create_user(username, email, password, is_staff=role)
         return redirect('login')
     return render(request, 'register.html')
 
@@ -246,6 +345,10 @@ def get_semesters(request):
     return JsonResponse({'semesters': list(semesters)})
 
 
+from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
+from .models import Student, Semester, Marks
+
 def calculate_grade_point(grade):
     if grade == 'O':
         return 10
@@ -264,7 +367,6 @@ def calculate_grade_point(grade):
     else:
         return 0
 
-@login_required
 def view_marksheet(request):
     student = Student.objects.get(user=request.user)
     if request.method == 'POST':
@@ -272,27 +374,116 @@ def view_marksheet(request):
         marks = Marks.objects.filter(student=student, subject__semester__number=semester)
 
         total_grade_points = 0
-        total_subjects = 0
+        total_credits = 0
         for mark in marks:
-            total_grade_points += calculate_grade_point(mark.grade)
-            total_subjects += 1
+            grade_point = calculate_grade_point(mark.grade)
+            total_grade_points += grade_point * mark.subject.credits
+            total_credits += mark.subject.credits
 
-        sgpa = total_grade_points / total_subjects if total_subjects > 0 else 0
+        sgpa = total_grade_points / total_credits if total_credits > 0 else 0
 
-        # Calculate CGPA
+        # Calculate CGPA and total credits
         all_marks = Marks.objects.filter(student=student, subject__semester__number__lte=semester)
         total_cumulative_grade_points = 0
-        total_cumulative_subjects = 0
+        total_cumulative_credits = 0
         for mark in all_marks:
-            total_cumulative_grade_points += calculate_grade_point(mark.grade)
-            total_cumulative_subjects += 1
+            grade_point = calculate_grade_point(mark.grade)
+            total_cumulative_grade_points += grade_point * mark.subject.credits
+            total_cumulative_credits += mark.subject.credits
 
-        cgpa = total_cumulative_grade_points / total_cumulative_subjects if total_cumulative_subjects > 0 else 0
+        cgpa = total_cumulative_grade_points / total_cumulative_credits if total_cumulative_credits > 0 else 0
 
-        return render(request, 'view_marksheet.html', {'marks': marks, 'student': student, 'semester': semester, 'sgpa': sgpa, 'cgpa': cgpa})
+        context = {
+            'marks': marks,
+            'student': student,
+            'semester': semester,
+            'sgpa': sgpa,
+            'cgpa': cgpa,
+            'semester_credits': total_credits,
+            'total_credits': total_cumulative_credits,
+            'date': timezone.now().strftime('%Y-%m-%d'),
+        }
+        return render(request, 'view_marksheet.html', context)
     else:
         semesters = Semester.objects.filter(course=student.course)
         return render(request, 'select_semester.html', {'semesters': semesters})
+    
+def view_consolidated_marksheet(request):
+    student = get_object_or_404(Student, user=request.user)
+    semesters = Semester.objects.filter(course=student.course)
+
+    consolidated_data = []
+    total_cumulative_grade_points = 0
+    total_cumulative_credits = 0
+
+    for semester in semesters:
+        marks = Marks.objects.filter(student=student, subject__semester=semester)
+        total_grade_points = 0
+        total_credits = 0
+        for mark in marks:
+            grade_point = calculate_grade_point(mark.grade)
+            total_grade_points += grade_point * mark.subject.credits
+            total_credits += mark.subject.credits
+
+        if total_credits > 0:
+            sgpa = total_grade_points / total_credits
+            total_cumulative_grade_points += total_grade_points
+            total_cumulative_credits += total_credits
+
+            consolidated_data.append({
+                'semester': semester.number,
+                'total_credits': total_credits,
+                'sgpa': sgpa,
+            })
+
+    cgpa = total_cumulative_grade_points / total_cumulative_credits if total_cumulative_credits > 0 else 0
+
+    context = {
+        'student': student,
+        'consolidated_data': consolidated_data,
+        'cgpa': cgpa,
+        'date': timezone.now().strftime('%Y-%m-%d'),
+        'total_cumulative_credits': total_cumulative_credits,
+    }
+    return render(request, 'view_consolidated_marksheet.html', context)
+
+def download_consolidated_marksheet_pdf(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    semesters = Semester.objects.filter(course=student.course)
+
+    consolidated_data = []
+    total_cumulative_grade_points = 0
+    total_cumulative_credits = 0
+
+    for semester in semesters:
+        marks = Marks.objects.filter(student=student, subject__semester=semester)
+        total_grade_points = 0
+        total_credits = 0
+        for mark in marks:
+            grade_point = calculate_grade_point(mark.grade)
+            total_grade_points += grade_point * mark.subject.credits
+            total_credits += mark.subject.credits
+
+        sgpa = total_grade_points / total_credits if total_credits > 0 else 0
+        total_cumulative_grade_points += total_grade_points
+        total_cumulative_credits += total_credits
+
+        consolidated_data.append({
+            'semester': semester.number,
+            'total_credits': total_credits,
+            'sgpa': sgpa,
+        })
+
+    cgpa = total_cumulative_grade_points / total_cumulative_credits if total_cumulative_credits > 0 else 0
+
+    context = {
+        'student': student,
+        'consolidated_data': consolidated_data,
+        'cgpa': cgpa,
+        'date': timezone.now().strftime('%Y-%m-%d'),
+    }
+    pdf = render_to_pdf('view_consolidated_marksheet_pdf.html', context)
+    return HttpResponse(pdf, content_type='application/pdf')
 
 @login_required
 def enter_marks(request):

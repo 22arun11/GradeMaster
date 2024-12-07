@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Marksheet</title>
+    <title>Consolidated Marksheet</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,41 +62,19 @@
 <body>
     <div class="container">
         <h2>Amrita Vishwa Vidyapeetham Coimbatore</h2>
-        <h3>Marksheet for {{ student.name }} - Semester {{ semester }}</h3>
+        <h3>Consolidated Marksheet for {{ student.name }}</h3>
         <p>Date: {{ date }}</p>
         <table>
             <tr>
-                <th>Subject</th>
-                <th>Marks</th>
-                <th>Grade</th>
-                <th>Credits</th>
-                <th>Grade Point</th>
+                <th>Semester</th>
+                <th>Total Credits Earned</th>
+                <th>SGPA</th>
             </tr>
-            {% for mark in marks %}
+            {% for data in consolidated_data %}
                 <tr>
-                    <td>{{ mark.subject.name }}</td>
-                    <td>{{ mark.marks }}</td>
-                    <td>{{ mark.grade }}</td>
-                    <td>{{ mark.subject.credits }}</td>
-                    <td>
-                        {% if mark.grade == 'O' %}
-                            10
-                        {% elif mark.grade == 'A+' %}
-                            9.5
-                        {% elif mark.grade == 'A' %}
-                            9
-                        {% elif mark.grade == 'B+' %}
-                            8
-                        {% elif mark.grade == 'B' %}
-                            7
-                        {% elif mark.grade == 'C' %}
-                            6
-                        {% elif mark.grade == 'P' %}
-                            5
-                        {% else %}
-                            0
-                        {% endif %}
-                    </td>
+                    <td>{{ data.semester }}</td>
+                    <td>{{ data.total_credits }}</td>
+                    <td>{{ data.sgpa }}</td>
                 </tr>
             {% endfor %}
         </table>
@@ -104,14 +82,12 @@
         <div class="summary-container">
             <div class="summary">
                 <h3>Summary</h3>
-                <p><strong>SGPA:</strong> {{ sgpa }}</p>
                 <p><strong>CGPA:</strong> {{ cgpa }}</p>
             </div>
 
             <div class="credits-summary">
                 <h3>Credits Summary</h3>
-                <p><strong>Credits Earned This Semester:</strong> {{ semester_credits }}</p>
-                <p><strong>Total Credits Earned So Far:</strong> {{ total_credits }}</p>
+                <p><strong>Total Credits Earned:</strong> {{ total_cumulative_credits }}</p>
             </div>
         </div>
 
@@ -168,7 +144,6 @@
             <p>__________________________</p>
         </div>
 
-        <a href="{% url 'download_marksheet_pdf' student.id semester %}" class="download-btn">Download as PDF</a>
-    </div>
+        </div>
 </body>
 </html>

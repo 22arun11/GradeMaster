@@ -2,18 +2,82 @@
 <html>
 <head>
     <title>Select Semester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            font-size: 18px;
+            color: #333;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h2>Select Semester</h2>
-    <form method="post">
-        {% csrf_token %}
-        <label for="semester">Semester:</label>
-        <select name="semester" id="semester">
-            {% for semester in semesters %}
-                <option value="{{ semester.number }}">{{ semester.number }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">View Marksheet</button>
-    </form>
+    <div class="container">
+        <h1>Welcome to University Dashboard</h1>
+        <h2>Select an Option</h2>
+        <form method="post" action="{% url 'view_marksheet' %}">
+            {% csrf_token %}
+            <label for="semester">Semester:</label>
+            <select name="semester" id="semester">
+                {% for semester in semesters %}
+                    <option value="{{ semester.number }}">{{ semester.number }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">View Marksheet</button>
+        </form>
+        <form method="post" action="{% url 'view_consolidated_marksheet' %}">
+            {% csrf_token %}
+            <button type="submit">View Consolidated Marksheet</button>
+        </form>
+        <form method="post" action="{% url 'view_strengths_weaknesses' %}">
+            {% csrf_token %}
+            <button type="submit">View Strengths and Weaknesses</button>
+        </form>
+    </div>
 </body>
 </html>

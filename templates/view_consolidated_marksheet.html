@@ -30,7 +30,15 @@
         th {
             background-color: #f2f2f2;
         }
-        .summary {
+        .summary-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .summary, .credits-summary {
+            width: 48%;
+        }
+        .grade-reference, .calculation-info {
             margin-top: 20px;
         }
         .footer {
@@ -40,59 +48,103 @@
         .footer p {
             margin: 5px 0;
         }
+        .download-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>University Name</h2>
+        <h2>Amrita Vishwa Vidyapeetham Coimbatore</h2>
         <h3>Consolidated Marksheet for {{ student.name }}</h3>
         <p>Date: {{ date }}</p>
         <table>
             <tr>
-                <th>Subject</th>
-                <th>Marks</th>
-                <th>Grade</th>
-                <th>Credits</th>
-                <th>Grade Point</th>
+                <th>Semester</th>
+                <th>Total Credits Earned</th>
+                <th>SGPA</th>
             </tr>
-            {% for mark in marks %}
+            {% for data in consolidated_data %}
                 <tr>
-                    <td>{{ mark.subject.name }}</td>
-                    <td>{{ mark.marks }}</td>
-                    <td>{{ mark.grade }}</td>
-                    <td>{{ mark.subject.credits }}</td>
-                    <td>
-                        {% if mark.grade == 'O' %}
-                            10
-                        {% elif mark.grade == 'A+' %}
-                            9.5
-                        {% elif mark.grade == 'A' %}
-                            9
-                        {% elif mark.grade == 'B+' %}
-                            8
-                        {% elif mark.grade == 'B' %}
-                            7
-                        {% elif mark.grade == 'C' %}
-                            6
-                        {% elif mark.grade == 'P' %}
-                            5
-                        {% else %}
-                            0
-                        {% endif %}
-                    </td>
+                    <td>{{ data.semester }}</td>
+                    <td>{{ data.total_credits }}</td>
+                    <td>{{ data.sgpa }}</td>
                 </tr>
             {% endfor %}
         </table>
 
-        <div class="summary">
-            <h3>Summary</h3>
-            <p><strong>CGPA:</strong> {{ cgpa }}</p>
+        <div class="summary-container">
+            <div class="summary">
+                <h3>Summary</h3>
+                <p><strong>CGPA:</strong> {{ cgpa }}</p>
+            </div>
+
+            <div class="credits-summary">
+                <h3>Credits Summary</h3>
+                <p><strong>Total Credits Earned:</strong> {{ total_cumulative_credits }}</p>
+            </div>
+        </div>
+
+        <div class="grade-reference">
+            <h3>Grade Reference</h3>
+            <table>
+                <tr>
+                    <th>Grade</th>
+                    <th>Grade Point</th>
+                </tr>
+                <tr>
+                    <td>O</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>A+</td>
+                    <td>9.5</td>
+                </tr>
+                <tr>
+                    <td>A</td>
+                    <td>9</td>
+                </tr>
+                <tr>
+                    <td>B+</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td>B</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>P</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>0</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="calculation-info">
+            <h3>Calculation Information</h3>
+            <p><strong>SGPA Calculation:</strong> SGPA = (Sum of (Grade Points * Credits) for all subjects in the semester) / (Total Credits in the semester)</p>
+            <p><strong>CGPA Calculation:</strong> CGPA = (Sum of (Grade Points * Credits) for all subjects up to the current semester) / (Total Credits up to the current semester)</p>
         </div>
 
         <div class="footer">
             <p>University Signature</p>
             <p>__________________________</p>
         </div>
+
+        <a href="{% url 'download_consolidated_marksheet_pdf' student.id %}" class="download-btn">Download as PDF</a>
     </div>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Teacher Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,14 +18,14 @@
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 400px;
             text-align: center;
         }
         h2 {
             color: #333;
             margin-bottom: 20px;
         }
-        input[type="text"], input[type="password"], select {
+        select {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -45,38 +45,29 @@
         button:hover {
             background-color: #45a049;
         }
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .footer p {
-            margin: 5px 0;
-        }
-        .footer a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Login</h2>
-        <form method="post">
+        <h2>Teacher Dashboard</h2>
+        <form method="post" action="{% url 'view_student_marksheet' 0 %}" id="studentForm">
             {% csrf_token %}
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <select name="role" required>
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
+            <select name="student_id" id="studentSelect" required>
+                {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.name }}</option>
+                {% endfor %}
             </select>
-            <button type="submit">Login</button>
+            <button type="submit">View Marksheet</button>
         </form>
-        <div class="footer">
-            <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
-        </div>
     </div>
+    <script>
+        document.getElementById('studentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var studentId = document.getElementById('studentSelect').value;
+            var formAction = "{% url 'view_student_marksheet' 0 %}".replace('0', studentId);
+            this.action = formAction;
+            this.submit();
+        });
+    </script>
 </body>
 </html>

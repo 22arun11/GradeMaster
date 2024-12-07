@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Strengths and Weaknesses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .summary-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .summary, .credits-summary {
+            width: 48%;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Amrita Vishwa Vidyapeetham Coimbatore</h2>
+        <h3>Strengths and Weaknesses for {{ student.name }}</h3>
+        {% load custom_filters %}
+        <div class="summary-container">
+            <div class="summary">
+                <h3>Strengths</h3>
+                <table>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Average Marks</th>
+                    </tr>
+                    {% for subject, scores in strengths %}
+                        <tr>
+                            <td>{{ subject }}</td>
+                            <td>{{ scores|average }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="credits-summary">
+                <h3>Weaknesses</h3>
+                <table>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Average Marks</th>
+                    </tr>
+                    {% for subject, scores in weaknesses %}
+                        <tr>
+                            <td>{{ subject }}</td>
+                            <td>{{ scores|average }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="recommendations">
+            <h3>Recommendations</h3>
+            <ul>
+                {% for recommendation in recommendations %}
+                    <li>{{ recommendation|safe }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>University Signature</p>
+            <p>__________________________</p>
+        </div>
+    </div>
+</body>
+</html>
