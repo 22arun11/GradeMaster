@@ -89,10 +89,12 @@ Contributions are welcome! Please follow these steps to contribute:
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## ScreenShots For the App 
-Login Page
+*Login Page
+
 ![WhatsApp Image 2024-12-07 at 20 54 49_5845f370](https://github.com/user-attachments/assets/6f5e7c9b-6340-4d04-9996-2b0129667e4b)
 
-Register Page 
+
+*Register Page 
 Students could register with the student role and teacher with the teacher role 
 ![WhatsApp Image 2024-12-07 at 20 59 12_6acd5479](https://github.com/user-attachments/assets/1079ae01-f1fb-4723-b6aa-6db9c6f0d311)
 
